@@ -9,17 +9,27 @@ def equalized_odds(df, y_true, y_pred, protected_col):
     for g in groups:
         subset = df[df[protected_col] == g]
 
-        tn, fp, fn, tp = confusion_matrix(
-            subset[y_true],
-            subset[y_pred]
-        ).ravel()
+        y_t = subset[y_true]
+        y_p = subset[y_pred]
+
+        cm = confusion_matrix(y_t, y_p, labels=[0, 1])
+
+        # ensure 2x2
+        if cm.shape != (2, 2):
+            results[g] = {
+                "TPR": 0,
+                "FPR": 0
+            }
+            continue
+
+        tn, fp, fn, tp = cm.ravel()
 
         tpr = tp / (tp + fn) if (tp + fn) else 0
         fpr = fp / (fp + tn) if (fp + tn) else 0
 
         results[g] = {
-            "TPR": tpr,
-            "FPR": fpr
+            "TPR": float(tpr),
+            "FPR": float(fpr)
         }
 
     return results

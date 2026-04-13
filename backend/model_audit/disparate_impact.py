@@ -13,7 +13,9 @@ def disparate_impact(df, prediction_col, protected_col):
     di = minority / majority if majority != 0 else 0
 
     return {
-        "group_rates": grouped.to_dict(),
+        "group_rates": {
+            k: float(v) for k, v in grouped.to_dict().items()
+        },
         "disparate_impact": float(di),
-        "biased": di < 0.8
+        "biased": bool(di < 0.8)
     }
