@@ -11,22 +11,18 @@ def compute_fairness_metrics(
 
     metrics = {}
 
-    di = disparate_impact(
+    metrics["disparate_impact"] = disparate_impact(
         df,
         prediction_col,
         protected_col
     )
 
-    metrics["disparate_impact"] = di
-
-    if label_col:
-        eo = equalized_odds(
+    if label_col is not None:
+        metrics["equalized_odds"] = equalized_odds(
             df,
             label_col,
             prediction_col,
             protected_col
         )
-
-        metrics["equalized_odds"] = eo
 
     return metrics
