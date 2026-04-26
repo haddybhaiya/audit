@@ -11,17 +11,33 @@ def probe_model(
     protected: str,
     predict_url: str
 ):
+    # prevent path traversal
+    if "/" in filename or "\\" in filename:
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid filename"
+        )
 
     try:
         df = load_dataset(filename)
+    except FileNotFoundError:
+        raise HTTPException(
+            status_code=404,
+            detail="Dataset not found"
+        )
 
+    try:
         results = probe_model_api(
             df,
             protected,
             predict_url
         )
-
-    except Exception as e:
+    except KeyError as e:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Column not found: {str(e)}"
+        )
+    except ValueError as e:
         raise HTTPException(
             status_code=400,
             detail=str(e)
