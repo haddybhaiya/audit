@@ -68,7 +68,10 @@ def run_surrogate_analysis(
     protected_importance = sum(
         score
         for col, score in importance.items()
-        if protected_col in col
+        if (
+            col == protected_col or
+            col.startswith(f"{protected_col}_")
+        )
     )
 
     return {
@@ -76,4 +79,5 @@ def run_surrogate_analysis(
         "protected_feature_importance":
             float(protected_importance)
     }
+
 
