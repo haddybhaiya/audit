@@ -9,7 +9,6 @@ router = APIRouter(prefix="/upload", tags=["upload"])
 
 TMP_DIR = Path("/tmp")
 
-@router.post("")
 @router.post("/")
 async def upload_dataset(file: UploadFile = File(...)):
     if not file.filename:

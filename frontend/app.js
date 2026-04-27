@@ -53,7 +53,7 @@ async function runAuditFlow() {
 
     showMessage(elements.statusMessage, "Generating report...");
 
-    const reportResponse = await fetch(`${API_BASE_URL}/report/`, {
+    const reportResponse = await fetch(`${API_BASE_URL}/report`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -83,7 +83,7 @@ async function uploadCsv(file) {
   const payload = new FormData();
   payload.append("file", file);
 
-  const uploadResponse = await fetch(`${API_BASE_URL}/upload/`, {
+  const uploadResponse = await fetch(`${API_BASE_URL}/upload`, {
     method: "POST",
     body: payload
   });
@@ -302,4 +302,3 @@ function escapeHtml(value) {
     .replace(/\"/g, "&quot;")
     .replace(/'/g, "&#39;");
 }
-
