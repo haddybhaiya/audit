@@ -117,13 +117,14 @@ def compute_probe_bias(scores_a, scores_b):
     else:
         di = min(mean_a, mean_b) / max(mean_a, mean_b)
 
-    diff = abs(mean_a - mean_b)
+    # Use pairwise absolute deltas so opposite signed shifts do not cancel out.
+    diff = float(np.abs(scores_a - scores_b).mean())
 
     return {
         "mean_group_a": mean_a,
         "mean_group_b": mean_b,
         "disparate_impact": float(di),
-        "avg_difference": float(diff),
+        "avg_difference": diff,
         "bias_detected": bool(di < 0.8)
     }
     
