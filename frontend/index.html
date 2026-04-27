@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Audit— Bias Auditor</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<h1>Audit— Bias Auditor</h1>
+
+<div class="card">
+<label>Dataset filename</label>
+<input id="filename" placeholder="surrg.csv" />
+
+<label>Prediction column</label>
+<input id="prediction" placeholder="prediction" />
+
+<label>Protected column</label>
+<input id="protected" placeholder="gender" />
+
+<button onclick="runAudit()">Run Bias Audit</button>
+</div>
+
+<pre id="output"></pre>
+
+<script src="app.js"></script>
+
+</body>
+</html>
