@@ -9,7 +9,8 @@ router = APIRouter(prefix="/probe", tags=["probe"])
 def probe_model(
     filename: str,
     protected: str,
-    predict_url: str
+    predict_url: str,
+    allow_local_predict_url: bool = False
 ):
     # prevent path traversal
     if "/" in filename or "\\" in filename:
@@ -30,7 +31,8 @@ def probe_model(
         results = probe_model_api(
             df,
             protected,
-            predict_url
+            predict_url,
+            allow_private_predict_url=allow_local_predict_url
         )
     except KeyError as e:
         raise HTTPException(

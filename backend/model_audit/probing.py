@@ -7,8 +7,11 @@ import os
 from backend.utils.counterfactuals import generate_counterfactual_pairs
 
 
-def _validate_predict_url(predict_url):
-    allow_private = os.getenv("AUDIT_ALLOW_PRIVATE_PREDICT_URLS") == "1"
+def _validate_predict_url(predict_url, allow_private=False):
+    allow_private = (
+        allow_private or
+        os.getenv("AUDIT_ALLOW_PRIVATE_PREDICT_URLS") == "1"
+    )
     parsed = urlparse(predict_url)
 
     if parsed.scheme not in {"http", "https"}:
@@ -60,8 +63,16 @@ def call_model(predict_url, record):
     return float(data["prediction"])
 
 
-def probe_model_api(df, protected_col, predict_url):
-    _validate_predict_url(predict_url)
+def probe_model_api(
+    df,
+    protected_col,
+    predict_url,
+    allow_private_predict_url=False
+):
+    _validate_predict_url(
+        predict_url,
+        allow_private=allow_private_predict_url
+    )
 
     pairs = generate_counterfactual_pairs(df, protected_col)
 
@@ -79,6 +90,20 @@ def probe_model_api(df, protected_col, predict_url):
     return compute_probe_bias(scores_a, scores_b)
 
 
+def run_probing_engine(
+    df,
+    predict_url,
+    protected_col,
+    allow_private_predict_url=False
+):
+    return probe_model_api(
+        df,
+        protected_col,
+        predict_url,
+        allow_private_predict_url=allow_private_predict_url
+    )
+
+
 def compute_probe_bias(scores_a, scores_b):
 
     scores_a = np.array(scores_a)
@@ -92,13 +117,14 @@ def compute_probe_bias(scores_a, scores_b):
     else:
         di = min(mean_a, mean_b) / max(mean_a, mean_b)
 
-    diff = abs(mean_a - mean_b)
+    # Use pairwise absolute deltas so opposite signed shifts do not cancel out.
+    diff = float(np.abs(scores_a - scores_b).mean())
 
     return {
         "mean_group_a": mean_a,
         "mean_group_b": mean_b,
         "disparate_impact": float(di),
-        "avg_difference": float(diff),
+        "avg_difference": diff,
         "bias_detected": bool(di < 0.8)
     }
     
