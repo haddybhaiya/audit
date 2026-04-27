@@ -1,30 +1,79 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Audit— Bias Auditor</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Audit — Bias Auditor</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
-
 <body>
+  <main class="container">
+    <header class="page-header">
+      <h1>Bias Audit Dashboard</h1>
+      <p>Upload a CSV and generate an audit report from the Railway backend.</p>
+    </header>
 
-<h1>Audit— Bias Auditor</h1>
+    <section class="card controls-card">
+      <h2>Run Audit</h2>
+      <div id="errorMessage" class="message error hidden" role="alert"></div>
+      <div id="statusMessage" class="message status hidden" aria-live="polite"></div>
 
-<div class="card">
-<label>Dataset filename</label>
-<input id="filename" placeholder="surrg.csv" />
+      <div class="field-group">
+        <label for="csvFile">CSV file</label>
+        <input id="csvFile" type="file" accept=".csv,text/csv" />
+      </div>
 
-<label>Prediction column</label>
-<input id="prediction" placeholder="prediction" />
+      <div class="form-grid">
+        <div class="field-group">
+          <label for="prediction">Prediction column</label>
+          <input id="prediction" placeholder="prediction" value="prediction" />
+        </div>
+        <div class="field-group">
+          <label for="protected">Protected column</label>
+          <input id="protected" placeholder="gender" value="gender" />
+        </div>
+      </div>
 
-<label>Protected column</label>
-<input id="protected" placeholder="gender" />
+      <div class="form-grid">
+        <div class="field-group">
+          <label for="predictUrl">Predict URL (optional)</label>
+          <input id="predictUrl" placeholder="https://..." />
+        </div>
+        <div class="field-group checkbox-field">
+          <label for="allowLocalPredictUrl">Allow local predict URL</label>
+          <input id="allowLocalPredictUrl" type="checkbox" />
+        </div>
+      </div>
 
-<button onclick="runAudit()">Run Bias Audit</button>
-</div>
+      <button id="runAuditBtn" class="primary-btn" type="button">
+        <span id="btnText">Upload &amp; Run Audit</span>
+        <span id="btnSpinner" class="spinner hidden" aria-hidden="true"></span>
+      </button>
+    </section>
 
-<pre id="output"></pre>
+    <section class="dashboard-grid">
+      <article class="card">
+        <h2>Severity</h2>
+        <div id="severityCards" class="severity-grid"></div>
+      </article>
 
-<script src="app.js"></script>
+      <article class="card">
+        <h2>Metrics</h2>
+        <div id="metricsPanel" class="metrics-list muted">No report yet.</div>
+      </article>
 
+      <article class="card">
+        <h2>Summary</h2>
+        <p id="summaryText" class="muted">No report yet.</p>
+      </article>
+
+      <article class="card">
+        <h2>LLM Explanation</h2>
+        <p id="llmText" class="muted">No explanation yet.</p>
+      </article>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
 </body>
 </html>
