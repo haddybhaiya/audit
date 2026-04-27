@@ -4,6 +4,7 @@ from backend.report.severity_mapper import (
 )
 
 from backend.report.bias_summary import generate_bias_summary
+from backend.report.llm_explainer import generate_llm_explanation
 
 
 def build_bias_report(
@@ -31,6 +32,14 @@ def build_bias_report(
         counterfactual_diff,
         protected_importance
     )
+     # Prepare metrics for LLM explanation
+    metrics_block = {
+        "disparate_impact": di,
+        "counterfactual_difference": counterfactual_diff,
+        "protected_importance": protected_importance
+    }
+
+    explanation = generate_llm_explanation(metrics_block)
 
     return {
         "severity": {
@@ -43,11 +52,6 @@ def build_bias_report(
                 )
         },
         "summary": summary,
-        "metrics": {
-            "disparate_impact": di,
-            "counterfactual_difference":
-                counterfactual_diff,
-            "protected_importance":
-                protected_importance
-        }
+        "metrics": metrics_block,
+        "explanation": explanation
     }
