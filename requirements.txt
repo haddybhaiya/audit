@@ -9,3 +9,4 @@ pydantic
 shap
 matplotlib
 google-generativeai
+python-dotenv

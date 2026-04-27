@@ -6,6 +6,8 @@ from backend.api.probe import router as probe_router
 from backend.api.mock_model import router as mock_router # Import the mock model router
 from backend.api.surrogate import router as surrogate_router
 from backend.api.report import router as report_router # Import the report router
+from dotenv import load_dotenv
+load_dotenv() # Load environment variables from .env file
 
 
 
@@ -24,3 +26,6 @@ app.include_router(report_router) # Include the report router to enable report g
 @app.get("/")
 def root():
     return {"message": "audit is running"}
+@app.get("/health")
+def health():
+    return {"status": "ok"}
