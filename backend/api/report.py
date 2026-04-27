@@ -38,6 +38,7 @@ def _json_safe(value: Any) -> Any:
     return value
 
 
+@router.post("")
 @router.post("/")
 def generate_report(request: ReportRequest):
     file_path = TMP_DIR / os.path.basename(request.filename)
