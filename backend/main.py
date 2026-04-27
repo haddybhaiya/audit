@@ -6,6 +6,7 @@ from backend.api.probe import router as probe_router
 from backend.api.mock_model import router as mock_router # Import the mock model router
 from backend.api.surrogate import router as surrogate_router
 from backend.api.report import router as report_router # Import the report router
+from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 load_dotenv() # Load environment variables from .env file
 
@@ -13,6 +14,13 @@ load_dotenv() # Load environment variables from .env file
 
 
 app = FastAPI(title = "Audit")
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+    allow_credentials=True
+)
 app.include_router(upload_router)
 app.include_router(scan_router)
 app.include_router(audit_router)

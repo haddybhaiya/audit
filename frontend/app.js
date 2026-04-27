@@ -1,5 +1,5 @@
 const API =
-"https://auditt.up.railway.app";
+"https://auditt.up.railway.app/report";
 
 async function runAudit(){
 
