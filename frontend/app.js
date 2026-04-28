@@ -113,24 +113,22 @@ function renderReport(data) {
   const metrics = parseMetrics(data);
   renderMetrics(metrics);
 
-  elements.summaryText.textContent = formatTextBlock(
+  renderSummary(
     firstDefined([
       data.summary,
       data.report_summary,
       data.result && data.result.summary,
       data.message
-    ]),
-    "No summary available."
+    ])
   );
 
-  elements.llmText.textContent = formatTextBlock(
+  renderExplanation(
     firstDefined([
       data.llm_explanation,
       data.explanation,
       data.analysis,
       data.result && data.result.llm_explanation
-    ]),
-    "No LLM explanation available."
+    ])
   );
 }
 
@@ -221,6 +219,86 @@ function renderMetrics(metrics) {
     .join("");
 }
 
+function renderSummary(summaryValue) {
+  const summary = normalizePossibleJson(summaryValue);
+  elements.summaryText.classList.remove("muted");
+
+  if (summary === null || summary === undefined) {
+    elements.summaryText.textContent = "No summary available.";
+    elements.summaryText.classList.add("muted");
+    return;
+  }
+
+  if (summary && typeof summary === "object" && !Array.isArray(summary)) {
+    const entries = Object.entries(summary);
+    if (!entries.length) {
+      elements.summaryText.textContent = "No summary available.";
+      elements.summaryText.classList.add("muted");
+      return;
+    }
+
+    elements.summaryText.innerHTML = `
+      <div class="summary-grid">
+        ${entries
+          .map(([key, value]) => {
+            const label = titleCase(String(key).replace(/_/g, " "));
+            const renderedValue = renderSummaryValue(value);
+            return `
+              <div class="summary-item">
+                <div class="summary-key">${escapeHtml(label)}</div>
+                <div class="summary-value">${renderedValue}</div>
+              </div>
+            `;
+          })
+          .join("")}
+      </div>
+    `;
+    return;
+  }
+
+  const text = formatTextBlock(summary, "No summary available.");
+  elements.summaryText.innerHTML = `<p>${formatInlineText(text)}</p>`;
+}
+
+function renderExplanation(explanationValue) {
+  const text = formatTextBlock(explanationValue, "No LLM explanation available.");
+  if (text === "No LLM explanation available.") {
+    elements.llmText.textContent = text;
+    elements.llmText.classList.add("muted");
+    return;
+  }
+
+  elements.llmText.classList.remove("muted");
+  const sections = String(text).trim().split(/(?=\d+\.\s)/g).map((part) => part.trim()).filter(Boolean);
+  const startsWithNumberedItem = /^\d+\.\s/.test(sections[0] || "");
+
+  if (startsWithNumberedItem) {
+    elements.llmText.innerHTML = `
+      <ol class="explanation-list">
+        ${sections
+          .map((item) => item.replace(/^\d+\.\s*/, ""))
+          .map((item) => `<li>${formatInlineText(item)}</li>`)
+          .join("")}
+      </ol>
+    `;
+    return;
+  }
+
+  if (sections.length > 1) {
+    const intro = sections[0].replace(/\s*:\s*$/, "");
+    const items = sections.slice(1).map((item) => item.replace(/^\d+\.\s*/, ""));
+    elements.llmText.innerHTML = `
+      <p>${formatInlineText(intro)}</p>
+      <ol class="explanation-list">
+        ${items.map((item) => `<li>${formatInlineText(item)}</li>`).join("")}
+      </ol>
+    `;
+    return;
+  }
+
+  elements.llmText.innerHTML = `<p>${formatInlineText(text)}</p>`;
+}
+
 function setLoading(isLoading) {
   elements.runAuditBtn.disabled = isLoading;
   elements.btnSpinner.classList.toggle("hidden", !isLoading);
@@ -292,6 +370,40 @@ function formatTextBlock(value, fallback) {
     return JSON.stringify(value, null, 2);
   }
   return String(value);
+}
+
+function normalizePossibleJson(value) {
+  if (typeof value !== "string") {
+    return value;
+  }
+  const trimmed = value.trim();
+  if (!trimmed.startsWith("{") && !trimmed.startsWith("[")) {
+    return value;
+  }
+  try {
+    return JSON.parse(trimmed);
+  } catch (_) {
+    return value;
+  }
+}
+
+function renderSummaryValue(value) {
+  if (typeof value === "boolean") {
+    const label = value ? "Detected" : "Not detected";
+    const stateClass = value ? "is-true" : "is-false";
+    return `<span class="status-pill ${stateClass}">${label}</span>`;
+  }
+  return escapeHtml(formatMetricValue(value));
+}
+
+function titleCase(value) {
+  return value.replace(/\b\w/g, (char) => char.toUpperCase());
+}
+
+function formatInlineText(value) {
+  return escapeHtml(value)
+    .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+    .replace(/\n/g, "<br>");
 }
 
 function escapeHtml(value) {

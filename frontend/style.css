@@ -217,6 +217,68 @@ input[type="file"] {
   color: var(--subtext);
 }
 
+.rich-text p {
+  margin: 0;
+  line-height: 1.6;
+}
+
+.summary-grid {
+  display: grid;
+  gap: 10px;
+}
+
+.summary-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 12px;
+  background: #fafcff;
+}
+
+.summary-key {
+  color: var(--subtext);
+  font-weight: 600;
+}
+
+.summary-value {
+  font-weight: 700;
+  text-align: right;
+}
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.status-pill.is-true {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.status-pill.is-false {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.explanation-list {
+  margin: 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 8px;
+  line-height: 1.55;
+}
+
+.rich-text strong {
+  color: #111827;
+}
+
 .hidden {
   display: none !important;
 }
