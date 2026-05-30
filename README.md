@@ -1,6 +1,6 @@
 # audit
 
-**audit** is an end-to-end bias auditing platform with a Firebase-hosted dashboard and a Railway-deployed FastAPI backend.  
+**audit** is an end-to-end bias auditing platform with a Firebase-hosted dashboard and a Render-deployed FastAPI backend.  
 It analyzes uploaded CSV data for fairness risk and returns severity, metrics, summary signals, and an LLM explanation.
 
 ---
@@ -22,7 +22,7 @@ It analyzes uploaded CSV data for fairness risk and returns severity, metrics, s
 ```mermaid
 flowchart LR
   A[User Browser] --> B[Firebase Hosting<br/>Static Dashboard]
-  B -->|POST /upload/| C[Railway FastAPI]
+  B -->|POST /upload/| C[Render FastAPI]
   C -->|store CSV| D["/tmp"]
   B -->|POST /report/| C
   C --> E[Fairness Metrics]
@@ -41,7 +41,7 @@ flowchart LR
 sequenceDiagram
   participant U as User
   participant FE as Firebase Frontend
-  participant API as Railway FastAPI
+  participant API as Render FastAPI
   participant M as Predict API (/mock or external)
 
   U->>FE: Select CSV + settings
@@ -165,13 +165,13 @@ Frontend URL: `http://localhost:5500`
 
 ## Deployment
 
-### Railway (backend)
+### Render (backend)
 - Uses `Dockerfile` with `uvicorn backend.main:app --port 8080`.
 - File uploads are stored in `/tmp` (ephemeral runtime storage).
 
 ### Firebase Hosting (frontend)
 - `firebase.json` serves the `frontend/` directory.
-- Frontend should call Railway API over **HTTPS** only.
+- Frontend should call Render API over **HTTPS** only.
 
 ---
 

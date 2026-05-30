@@ -1,4 +1,4 @@
-const API_BASE_URL = "https://auditt.up.railway.app";
+const API_BASE_URL = "https://audit-upfi.onrender.com";
 const DEFAULT_PREDICT_URL = `${API_BASE_URL}/mock/`;
 
 const elements = {
@@ -414,4 +414,3 @@ function escapeHtml(value) {
     .replace(/\"/g, "&quot;")
     .replace(/'/g, "&#39;");
 }
-
