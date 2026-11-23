@@ -10,6 +10,7 @@ from backend.model_audit.metrics import compute_fairness_metrics
 from backend.model_audit.probing import run_probing_engine
 from backend.model_audit.surrogate import run_surrogate_analysis
 from backend.report.report_builder import build_bias_report
+from backend.data_layer.dataset_loader import validate_dataset_filename
 
 router = APIRouter(prefix="/report", tags=["report"])
 TMP_DIR = Path("/tmp")
@@ -20,7 +21,6 @@ class ReportRequest(BaseModel):
     prediction: str
     protected: str
     predict_url: str
-    allow_local_predict_url: bool = False
 
 
 def _json_safe(value: Any) -> Any:
@@ -41,7 +41,17 @@ def _json_safe(value: Any) -> Any:
 @router.post("")
 @router.post("/")
 def generate_report(request: ReportRequest):
+    # prevent path traversal: same filename validation as /probe, plus a
+    # resolved-path check so nothing can escape /tmp even in edge cases.
+    try:
+        validate_dataset_filename(request.filename)
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid filename")
+
     file_path = TMP_DIR / os.path.basename(request.filename)
+    if not file_path.resolve().is_relative_to(TMP_DIR.resolve()):
+        raise HTTPException(status_code=400, detail="Invalid filename")
+
     try:
         if not file_path.exists():
             raise HTTPException(
@@ -60,8 +70,7 @@ def generate_report(request: ReportRequest):
         probe = run_probing_engine(
             df,
             str(request.predict_url),
-            request.protected,
-            allow_private_predict_url=request.allow_local_predict_url
+            request.protected
         )
 
         surrogate = run_surrogate_analysis(

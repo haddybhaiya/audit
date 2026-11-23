@@ -66,13 +66,9 @@ def call_model(predict_url, record):
 def probe_model_api(
     df,
     protected_col,
-    predict_url,
-    allow_private_predict_url=False
+    predict_url
 ):
-    _validate_predict_url(
-        predict_url,
-        allow_private=allow_private_predict_url
-    )
+    _validate_predict_url(predict_url)
 
     pairs = generate_counterfactual_pairs(df, protected_col)
 
@@ -93,14 +89,12 @@ def probe_model_api(
 def run_probing_engine(
     df,
     predict_url,
-    protected_col,
-    allow_private_predict_url=False
+    protected_col
 ):
     return probe_model_api(
         df,
         protected_col,
-        predict_url,
-        allow_private_predict_url=allow_private_predict_url
+        predict_url
     )
 
 

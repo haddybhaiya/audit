@@ -118,8 +118,7 @@ Accepts JSON:
   "filename": "stored_name.csv",
   "prediction": "prediction",
   "protected": "gender",
-  "predict_url": "https://.../predict",
-  "allow_local_predict_url": false
+  "predict_url": "https://.../predict"
 }
 ```
 

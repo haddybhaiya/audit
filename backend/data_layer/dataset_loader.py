@@ -11,4 +11,10 @@ def load_dataset(filename:str):
     df = pd.read_csv(path)
 
     return df
+
+
+def validate_dataset_filename(filename: str) -> None:
+    """Reject filenames containing path separators; mirrors the /probe endpoint's guard."""
+    if "/" in filename or "\\" in filename:
+        raise ValueError("Invalid filename")
     
