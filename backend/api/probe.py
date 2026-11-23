@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException
-from backend.data_layer.dataset_loader import load_dataset
+from backend.data_layer.dataset_loader import load_dataset, validate_dataset_filename
 from backend.model_audit.probing import probe_model_api
 
 router = APIRouter(prefix="/probe", tags=["probe"])
@@ -12,7 +12,9 @@ def probe_model(
     predict_url: str,
 ):
     # prevent path traversal
-    if "/" in filename or "\\" in filename:
+    try:
+        validate_dataset_filename(filename)
+    except ValueError:
         raise HTTPException(
             status_code=400,
             detail="Invalid filename"
