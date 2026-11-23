@@ -20,7 +20,6 @@ class ReportRequest(BaseModel):
     prediction: str
     protected: str
     predict_url: str
-    allow_local_predict_url: bool = False
 
 
 def _json_safe(value: Any) -> Any:
@@ -60,8 +59,7 @@ def generate_report(request: ReportRequest):
         probe = run_probing_engine(
             df,
             str(request.predict_url),
-            request.protected,
-            allow_private_predict_url=request.allow_local_predict_url
+            request.protected
         )
 
         surrogate = run_surrogate_analysis(
