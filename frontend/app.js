@@ -6,7 +6,6 @@ const elements = {
   prediction: document.getElementById("prediction"),
   protected: document.getElementById("protected"),
   predictUrl: document.getElementById("predictUrl"),
-  allowLocalPredictUrl: document.getElementById("allowLocalPredictUrl"),
   runAuditBtn: document.getElementById("runAuditBtn"),
   btnText: document.getElementById("btnText"),
   btnSpinner: document.getElementById("btnSpinner"),
@@ -60,8 +59,7 @@ async function runAuditFlow() {
         filename: uploadedFilename,
         prediction,
         protected: protectedColumn,
-        predict_url: elements.predictUrl.value.trim(),
-        allow_local_predict_url: Boolean(elements.allowLocalPredictUrl.checked)
+        predict_url: elements.predictUrl.value.trim()
       })
     });
 
